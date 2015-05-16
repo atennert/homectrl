@@ -1,0 +1,96 @@
+@startuml
+
+package homectrl {
+    class HomeCtrlManager
+    abstract class AbstractCommunicationProxy{
+        #update(int id, Object value)
+        +control(int id, Object value)
+    }
+    interface IUpdatable<T>{
+        +boolean update(T value)
+        +int getId()
+    }
+    class Updatable<T>{
+        -T data
+        -int id
+        +T getValue()
+    }
+    interface ISensor<T>{
+        +T getValue()
+    }
+    abstract class AbstractSensor<T>{
+    }
+    interface IActor<T>{
+        +T getValue()
+        +control(T value)
+    }
+    abstract class AbstractActor<T>{
+    }
+    interface IController {
+        +updateSensor(id)
+        +updateActor(id)
+    }
+    class ConcreteController
+    class HomeCtrlCommandManager{
+        +update(int updatableId, Object value)
+        +notify(AbstractActor<?> actor, Object value)
+    }
+    interface IMediator{
+        update(IUpdatable updatable)
+    }
+    class UpdateMediator {
+        +setExecutorPoolThreads(int threadCount)
+        +setActorListener(AbstractActor actor, IController listener)
+        +setSensorListeners(AbstractSensor sensor, Set<IController> listeners)
+    }
+}
+
+IController <|.. ConcreteController
+IUpdatable <|.. Updatable
+ISensor <|.. AbstractSensor
+IActor <|.. AbstractActor
+IMediator <|.. UpdateMediator
+
+AbstractCommunicationProxy <..> HomeCtrlCommandManager : <<uses>>
+HomeCtrlCommandManager "1" --> "1\nactor" IActor : controls
+
+UpdateMediator --> "0..*" IController : update
+
+Updatable <|-- AbstractSensor
+Updatable <|-- AbstractActor
+HomeCtrlCommandManager --> UpdateMediator : update
+ConcreteController --> HomeCtrlCommandManager : notify
+
+HomeCtrlCommandManager --> IUpdatable : update
+
+
+note left of AbstractActor #FFAAAA
+    "control" and "update" set a new value
+    in the actor, but "control" must only be
+    called by the controller and triggers a
+    control update to the communicator
+    whereas "update" is called from outside
+    and must trigger a controller update via
+    the mediator.
+end note
+
+note left of HomeCtrlCommandManager
+    Incoming request are synchronized
+    using a single-threaded command
+    queue.
+end note
+
+note right of UpdateMediator
+    The value updates of one update
+    notification are send to the
+    controllers in parallel.    
+end note
+
+note as N1 #AAFF77
+    <b>TODO</b>
+    - Sensors, actors and controllers need
+       to be created by a factory
+    - Synchronized information access in
+       sensors and actors
+end note
+@enduml

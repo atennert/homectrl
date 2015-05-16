@@ -1,0 +1,33 @@
+@startuml
+
+actor Node1
+actor Node2
+participant COM
+participant Actor
+participant Sensor
+participant Mediator
+participant Controller
+
+Node1 -> COM : updateValues(a, b)
+note over COM : this is an interpret action
+
+loop for each value
+    alt value of sensor
+        COM -> Sensor : update(value)
+        Sensor -> Mediator : updated(value)
+        Mediator -> Controller : updated(sensor, value)
+    else value of actor
+        COM -> Actor : update(value)
+        Actor -> Mediator : updated(value)
+        Mediator -> Controller : updated(actor, value)
+    end
+    opt
+        Controller -> Actor : control(value)
+        Actor -> Mediator : internalUpdate(value)
+        Mediator -> COM : send(actor, value)
+    end
+end
+COM --> Node1 : reply()
+COM --> Node2 : requestAction(c)
+
+@enduml
