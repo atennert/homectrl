@@ -25,6 +25,7 @@ import org.atennert.com.interpretation.IInterpreter;
 import org.atennert.com.registration.INodeRegistration;
 import org.atennert.com.util.DataContainer;
 import org.atennert.com.util.MapDataContainer;
+import org.atennert.com.util.MessageContainer;
 import org.atennert.homectrl.communication.Base64Coder;
 import org.atennert.homectrl.communication.CodingHelper;
 import org.slf4j.Logger;
@@ -45,7 +46,7 @@ public class EnOceanInterpreter implements IInterpreter
     /** Advanced radio protocol raw data */
     private static final int TYPE_RADIO_ADVANCED = 0x0A;
 
-    public DataContainer decode( String message )
+    public DataContainer decode( MessageContainer message )
     {
         // not used
         return null;
@@ -57,12 +58,17 @@ public class EnOceanInterpreter implements IInterpreter
         return null;
     }
 
-    public String interpret( String message, String sender, IDataAcceptance acceptance,
+    public String interpret( MessageContainer message, String sender, IDataAcceptance acceptance,
             INodeRegistration nr )
     {
         log.trace( "interpreting: " + message );
+        if( message.message == null )
+        {
+            return null;
+        }
+
         // message = packetType, isDataValid, lengthOptional, optional[], data[]
-        final byte[] byteMessage = Base64Coder.decode( message );
+        final byte[] byteMessage = Base64Coder.decode( message.message );
 
         final int optLen = CodingHelper.byteToInt( byteMessage[2] );
         final byte[] optional = new byte[optLen], data = new byte[byteMessage.length - 3 - optLen];

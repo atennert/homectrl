@@ -20,6 +20,7 @@ import org.atennert.com.communication.IDataAcceptance;
 import org.atennert.com.interpretation.IInterpreter;
 import org.atennert.com.registration.INodeRegistration;
 import org.atennert.com.util.DataContainer;
+import org.atennert.com.util.MessageContainer;
 
 /**
  * Interpreter for the specific use with the SSEServer class. <br>
@@ -29,7 +30,7 @@ import org.atennert.com.util.DataContainer;
 public class SSEInterpreter implements IInterpreter
 {
 
-    public DataContainer decode( String message )
+    public DataContainer decode( MessageContainer message )
     {
         // TODO Auto-generated method stub
         return null;
@@ -41,7 +42,7 @@ public class SSEInterpreter implements IInterpreter
         return null;
     }
 
-    public String interpret( String message, String sender, IDataAcceptance acceptance,
+    public String interpret( MessageContainer message, String sender, IDataAcceptance acceptance,
             INodeRegistration nr )
     {
         // TODO check client and register it for SSEs

@@ -46,7 +46,7 @@ public class HttpHelper
         String buffer, content_type = null, message = "";
         long content_length = -1;
 
-        MessageContainer result = null;
+        MessageContainer result = new MessageContainer(MessageContainer.Exception.IO);
 
         // retrieve content info
         try
@@ -92,11 +92,11 @@ public class HttpHelper
             }
             else if( content )
             { // Bugfix to initiate status return for empty messages
-                result = new MessageContainer( content_type.split( ";" )[0].split( "/" )[1], "" );
+                result = new MessageContainer( content_type.split( ";" )[0].split( "/" )[1], null, MessageContainer.Exception.EMPTY );
             }
             else
             {
-                result = null;
+                result = new MessageContainer(MessageContainer.Exception.EMPTY);
             }
         }
         catch( NumberFormatException e )

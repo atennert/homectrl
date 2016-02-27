@@ -62,12 +62,12 @@ public class HttpSender implements ISender
         catch( UnknownHostException e )
         {
             log.error( "Don't know about host: " + host + "." );
-            return null;
+            return new MessageContainer(MessageContainer.Exception.UNKOWN_HOST);
         }
         catch( IOException e )
         {
             log.error( "Couldn't get I/O for the connection to: " + host + "." );
-            return null;
+            return new MessageContainer(MessageContainer.Exception.IO);
         }
 
         MessageContainer response = null;
@@ -92,7 +92,7 @@ public class HttpSender implements ISender
             }
             else
             {
-                response = null;
+                response = new MessageContainer(MessageContainer.Exception.EMPTY);
             }
 
             // close connection
@@ -103,7 +103,7 @@ public class HttpSender implements ISender
         catch( IOException e )
         {
             log.error( "I/O for the connection to " + host + " was lost during receiving." );
-            return null;
+            return new MessageContainer(MessageContainer.Exception.IO);
         }
 
         return response;

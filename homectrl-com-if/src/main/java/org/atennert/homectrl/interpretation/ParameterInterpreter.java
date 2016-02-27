@@ -25,6 +25,7 @@ import org.atennert.com.interpretation.IInterpreter;
 import org.atennert.com.registration.INodeRegistration;
 import org.atennert.com.util.DataContainer;
 import org.atennert.com.util.MapDataContainer;
+import org.atennert.com.util.MessageContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,9 +37,9 @@ public class ParameterInterpreter implements IInterpreter
 
     private static Logger log = LoggerFactory.getLogger( ParameterInterpreter.class );
 
-    public DataContainer decode( String message )
+    public DataContainer decode( MessageContainer message )
     {
-        Map<String, Object> map = translateMessage( message );
+        Map<String, Object> map = translateMessage( message.message );
 
         if( map.size() < 1 )
         {
@@ -72,12 +73,12 @@ public class ParameterInterpreter implements IInterpreter
         return null;
     }
 
-    public String interpret( String message, String sender, IDataAcceptance acceptance,
+    public String interpret( MessageContainer message, String sender, IDataAcceptance acceptance,
             INodeRegistration nr )
     {
         log.trace( "interpreting: " + message );
 
-        Map<String, Object> map = translateMessage( message );
+        Map<String, Object> map = translateMessage( message.message );
 
         DataContainer status;
         try
@@ -96,18 +97,21 @@ public class ParameterInterpreter implements IInterpreter
     private Map<String, Object> translateMessage( String message )
     {
         Map<String, Object> map = new HashMap<String, Object>();
-        String[] params = message.split( "&" );
-        for( String param : params )
+        if( message != null )
         {
-            String[] keyVal = param.split( "=" );
-            if( keyVal.length == 2 && !keyVal[0].equals( "" ) )
+            String[] params = message.split( "&" );
+            for( String param : params )
             {
-                map.put( keyVal[0], keyVal[1] );
-            }
-            else if( keyVal.length == 1 && !keyVal[0].equals( "" ) )
-            // Bugfix to read empty values
-            {
-                map.put( keyVal[0], null );
+                String[] keyVal = param.split( "=" );
+                if( keyVal.length == 2 && !keyVal[0].equals( "" ) )
+                {
+                    map.put( keyVal[0], keyVal[1] );
+                }
+                else if( keyVal.length == 1 && !keyVal[0].equals( "" ) )
+                // Bugfix to read empty values
+                {
+                    map.put( keyVal[0], null );
+                }
             }
         }
 
