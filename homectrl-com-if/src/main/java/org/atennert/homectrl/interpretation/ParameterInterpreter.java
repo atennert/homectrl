@@ -41,7 +41,7 @@ public class ParameterInterpreter implements IInterpreter
     {
         Map<String, Object> map = translateMessage( message.message );
 
-        if( map.size() < 1 )
+        if( map.size() < 1 || message.hasException())
         {
             return null;
         }
@@ -77,6 +77,10 @@ public class ParameterInterpreter implements IInterpreter
             INodeRegistration nr )
     {
         log.trace( "interpreting: " + message );
+
+        if (message.hasException() && !MessageContainer.Exception.EMPTY.equals( message.error )){
+            return "";
+        }
 
         Map<String, Object> map = translateMessage( message.message );
 

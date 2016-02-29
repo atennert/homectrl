@@ -62,7 +62,7 @@ public class EnOceanInterpreter implements IInterpreter
             INodeRegistration nr )
     {
         log.trace( "interpreting: " + message );
-        if( message.message == null )
+        if( message.hasException() || message.message == null )
         {
             return null;
         }
