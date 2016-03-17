@@ -28,14 +28,14 @@ public class DeviceRegistrationTest
     public void setup()
     {
         interpreterProtocolRuleSet = new HashMap<String, Set<String>>();
-        Set<String> protocols = new HashSet<String>();
-        protocols.add( PROTOCOL_0 );
-        interpreterProtocolRuleSet.put( INTERPRETER_0, protocols );
+        Set<String> interpreters = new HashSet<String>();
+        interpreters.add( INTERPRETER_0 );
+        interpreters.add( INTERPRETER_1 );
+        interpreterProtocolRuleSet.put( PROTOCOL_0, interpreters );
 
-        protocols = new HashSet<String>();
-        protocols.add( PROTOCOL_0 );
-        protocols.add( PROTOCOL_1 );
-        interpreterProtocolRuleSet.put( INTERPRETER_1, protocols );
+        interpreters = new HashSet<String>();
+        interpreters.add( INTERPRETER_1 );
+        interpreterProtocolRuleSet.put( PROTOCOL_1, interpreters );
 
         deviceRegistration = new DeviceRegistration();
         deviceRegistration.setInterpreterProtocolRestrictions( interpreterProtocolRuleSet );

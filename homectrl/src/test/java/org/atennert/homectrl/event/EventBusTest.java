@@ -34,7 +34,7 @@ public class EventBusTest extends TestUtils
 
         eventBus.post(new Object());
 
-        verify(threadPool).submit(any(Runnable.class));
+        verify(threadPool).execute(any(Runnable.class));
     }
 
     @Test
