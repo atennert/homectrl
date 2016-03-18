@@ -1,0 +1,34 @@
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.1.6.RELEASE")
+    }
+}
+
+allprojects {
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    group = "org.atennert.homectrl"
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    repositories {
+        mavenCentral()
+        flatDir {
+            dirs 'libs'
+        }
+    }
+
+    dependencies {
+        compile fileTree(dir: 'libs', include: '*.jar')
+        testCompile "junit:junit:4+"
+        testCompile "org.mockito:mockito-all:1.9.5"
+    }
+}

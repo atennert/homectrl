@@ -1,0 +1,9 @@
+
+include ':homectrl'
+include ':controls'
+include ':dataprocessing'
+include ':homectrl-com-if'
+include ':sensors'
+include ':server'
+
+rootProject.name = 'HomeCtrl'

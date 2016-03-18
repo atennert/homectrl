@@ -1,0 +1,36 @@
+/*
+ * HomeCtrl server app bundle
+ */
+
+apply plugin: "spring-boot"
+
+archivesBaseName = "server"
+version = "0.0.1"
+
+mainClassName = "org.atennert.homectrl.Main"
+
+jar {
+    baseName = "HomeCtrl"
+    version = ""
+
+    manifest {
+        attributes 'Main-Class': 'org.atennert.homectrl.Main'
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    } {
+        exclude "*.txt"
+        exclude "*.html"
+    }
+}
+
+dependencies {
+    compile project(':homectrl')
+    compile project(':homectrl-com-if')
+    compile project(':dataprocessing')
+    compile project(':controls')
+    compile project(':sensors')
+    compile "org.springframework:spring-context:4.0.2.RELEASE"
+    compile "org.json:json:20140107"
+}

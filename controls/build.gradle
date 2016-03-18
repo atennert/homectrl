@@ -1,0 +1,10 @@
+/*
+ * HomeCtrl control modules
+ */
+
+archivesBaseName = "controls"
+version = "0.0.1"
+
+dependencies {
+    compile project(':homectrl')
+}
