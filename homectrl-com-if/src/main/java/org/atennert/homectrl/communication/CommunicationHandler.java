@@ -36,6 +36,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
+import rx.Single;
+import rx.SingleSubscriber;
 
 /**
  * This component is the binding between HomeCtrl and COM-framework.
@@ -68,7 +70,13 @@ public class CommunicationHandler implements IDataAcceptance
         this.hostAddressBook = hostAddressBook;
     }
 
-    public Future<DataContainer> evaluateData( String senderAddress, DataContainer data )
+    @Override
+    public void accept(String senderAddress, DataContainer data) {
+        evaluateData(senderAddress, data)
+                .subscribe(data.subscriber);
+    }
+
+    private Single<DataContainer> evaluateData( String senderAddress, DataContainer data )
     {
         Map<String, Object> valueMap;
         if( data instanceof MapDataContainer )
@@ -77,36 +85,23 @@ public class CommunicationHandler implements IDataAcceptance
         }
         else
         {
-            valueMap = new HashMap<String, Object>();
+            valueMap = new HashMap<>();
             valueMap.put( data.dataId, data.data );
         }
         Set<DataDescription> deviceDescriptions = hostAddressBook.getHostDevices( senderAddress,
                 valueMap.keySet() );
 
-        if( deviceDescriptions.size() > 0 )
+        for( DataDescription description : deviceDescriptions )
         {
-            /*
-             * special handling for GUI: - if host == GUI then return update to
-             * GUI for all values
-             */
-
-            for( DataDescription description : deviceDescriptions )
-            {
-                // we know, that the value is a String since it comes from the
-                // interpreter
-                eventBus.post(
-                        description.id,
-                        new EDeviceValueUpdate( description.id,
-                                DataType.getTypeValue( description.dataType,
-                                        (String) valueMap.get( description.referenceId ) ) ) );
-            }
+            // we know, that the value is a String since it comes from the
+            // interpreter
+            eventBus.post(
+                    description.id,
+                    new EDeviceValueUpdate( description.id,
+                            DataType.getTypeValue( description.dataType,
+                                    (String) valueMap.get( description.referenceId ) ) ) );
         }
-        else
-        {
-            log.warn( "[evaluateData] no device descriptions found for host address: "
-                    + senderAddress );
-        }
-        return null;
+        return Single.just(null);
     }
 
     @Subscribe
@@ -121,8 +116,19 @@ public class CommunicationHandler implements IDataAcceptance
         }
         else
         {
-            communicator.send( entry.hostName, new DataContainer( entry.referenceId, event.value ) );
+            communicator.send( entry.hostName, new DataContainer( entry.referenceId, event.value, resultSubscriber ) );
         }
     }
 
+    private SingleSubscriber<DataContainer> resultSubscriber = new SingleSubscriber<DataContainer>() {
+        @Override
+        public void onSuccess(DataContainer container) {
+            log.debug( "[resultSubscriber.onSuccess] " + container.dataId + " := " + container.data );
+        }
+
+        @Override
+        public void onError(Throwable throwable) {
+            log.warn( "[resultSubscriber.onError] " + throwable.getMessage() );
+        }
+    };
 }

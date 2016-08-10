@@ -1,14 +1,5 @@
 package org.atennert.homectrl.communication;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-
 import org.atennert.com.communication.ICommunicatorAccess;
 import org.atennert.com.util.DataContainer;
 import org.atennert.homectrl.DataType;
@@ -20,9 +11,20 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
+import rx.SingleSubscriber;
+import rx.Subscription;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class CommunicationHandlerTest
 {
+    private static final String ADDRESS = "address";
+
     private CommunicationHandler handler;
 
     @Mock
@@ -76,5 +78,19 @@ public class CommunicationHandlerTest
                 } ) );
     }
 
-    // TODO implement Tests for receiving updates
+    @Test
+    public void acceptSimpleData()
+    {
+        final SingleSubscriber<DataContainer> subscriber = spy(new SingleSubscriber<DataContainer>() {
+            @Override
+            public void onSuccess(DataContainer dataContainer) {}
+            @Override
+            public void onError(Throwable throwable) {}
+        });
+        final DataContainer container = new DataContainer("id", "data", subscriber);
+
+        handler.accept(ADDRESS, container);
+
+        verify(subscriber).onSuccess(isNull(DataContainer.class));
+    }
 }

@@ -22,12 +22,15 @@ import java.util.Map.Entry;
 
 import org.atennert.com.communication.IDataAcceptance;
 import org.atennert.com.interpretation.IInterpreter;
-import org.atennert.com.registration.INodeRegistration;
 import org.atennert.com.util.DataContainer;
 import org.atennert.com.util.MapDataContainer;
 import org.atennert.com.util.MessageContainer;
+import org.atennert.com.util.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rx.Scheduler;
+import rx.Single;
+import rx.SingleSubscriber;
 
 /**
  * Interpreter for parameter messages (key-value lists).
@@ -47,7 +50,7 @@ public class ParameterInterpreter implements IInterpreter
         }
         else
         {
-            return new MapDataContainer( map );
+            return new MapDataContainer( map, null );
         }
     }
 
@@ -73,34 +76,39 @@ public class ParameterInterpreter implements IInterpreter
         return null;
     }
 
-    public String interpret( MessageContainer message, String sender, IDataAcceptance acceptance,
-            INodeRegistration nr )
-    {
-        log.trace( "interpreting: " + message );
+    @Override
+    public void interpret(MessageContainer messageContainer, final Session session, IDataAcceptance acceptance, Scheduler scheduler) {
+        log.trace( "interpreting: " + messageContainer.message );
 
-        if (message.hasException() && !MessageContainer.Exception.EMPTY.equals( message.error )){
-            return "";
+        if (messageContainer.hasException() && !MessageContainer.Exception.EMPTY.equals( messageContainer.error )){
+            session.call(null);
         }
 
-        Map<String, Object> map = translateMessage( message.message );
+        Map<String, Object> map = translateMessage( messageContainer.message );
 
-        DataContainer status;
-        try
-        {
-            status = acceptance.evaluateData( sender, new MapDataContainer( map ) ).get();
-        }
-        catch( Exception e )
-        {
-            log.error( e.getMessage() );
-            return "";
-        }
+        acceptance.accept( session.getSender(), new MapDataContainer(map,
+                new SingleSubscriber<DataContainer>() {
+                    @Override
+                    public void onSuccess(DataContainer dataContainer) {
+                        Single.just(dataContainer)
+                                .subscribeOn(session.scheduler)
+                                .map(data -> encode(data))
+                                .subscribe(session);
+                    }
 
-        return encode( status );
+                    @Override
+                    public void onError(Throwable throwable) {
+                        log.error("[ParameterInterpreter.Subscriber.accept] ERROR");
+                        Single.<String>just(null)
+                                .subscribeOn(session.scheduler)
+                                .subscribe(session);
+                    }
+                }) );
     }
 
     private Map<String, Object> translateMessage( String message )
     {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         if( message != null )
         {
             String[] params = message.split( "&" );
@@ -112,7 +120,7 @@ public class ParameterInterpreter implements IInterpreter
                     map.put( keyVal[0], keyVal[1] );
                 }
                 else if( keyVal.length == 1 && !keyVal[0].equals( "" ) )
-                // Bugfix to read empty values
+                // Bug fix to read empty values
                 {
                     map.put( keyVal[0], null );
                 }

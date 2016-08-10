@@ -24,6 +24,7 @@ import org.atennert.com.communication.AbstractReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
+import rx.Scheduler;
 
 /**
  * Instances of this class wait at a certain port for incoming HTTP messages and
@@ -45,7 +46,6 @@ public abstract class AbstractHttpReceiver extends AbstractReceiver
         this.serverPort = Integer.parseInt( addressParts[1] );
     }
 
-    @Override
     public String getAddress()
     {
         return serverAddress + ":" + serverPort;

@@ -83,13 +83,21 @@
       </map>
     </property>
   </bean>
-  
+
+  <bean id="scheduler" class="rx.schedulers.Schedulers" factory-method="from">
+    <constructor-arg index="0">
+        <bean class="java.util.concurrent.Executors" factory-method="newFixedThreadPool" destroy-method="shutdown">
+            <constructor-arg index="0" value="10" /><!-- Thread count -->
+        </bean>
+    </constructor-arg>
+  </bean>
+
   <bean id="communicator" class="org.atennert.com.communication.Communicator">
-    <property name="hostName" value="server"/>
     <property name="interpreterManager" ref="interpreterManager"/>
     <property name="senderManager" ref="senderManager"/>
     <property name="nodeRegistration" ref="deviceRegistration"/>
-    <property name="receiver">
+    <property name="scheduler" ref="scheduler"/>
+    <property name="receivers">
       <map>
         <entry key="http">
           <bean class="org.atennert.homectrl.communication.HttpReceiver">

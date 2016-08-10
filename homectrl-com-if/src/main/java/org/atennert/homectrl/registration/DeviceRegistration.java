@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015 Andreas Tennert
+ * Copyright 2016 Andreas Tennert
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -99,21 +99,6 @@ public class DeviceRegistration implements INodeRegistration, IHostAddressBook
         return entries;
     }
 
-    public void registerNode( String name )
-    {
-        // do nothing, interpreters registered via device configuration
-    }
-
-    public void unregisterNode( String name )
-    {
-        // do nothing, interpreters registered via device configuration
-    }
-
-    public void addNodeReceiveAddressProtocol( String node, String address, String protocol )
-    {
-        // do nothing, interpreters registered via device configuration
-    }
-
     public Set<String> getNodeReceiveAddresses( String node )
     {
         Set<IAddress> addressObjects = nodeDescriptions.get( node ).getReceiveAddresses();
@@ -140,16 +125,6 @@ public class DeviceRegistration implements INodeRegistration, IHostAddressBook
         return null;
     }
 
-    public void deleteNodeReceiveAddressProtocol( String address )
-    {
-        // do nothing, interpreters registered via device configuration
-    }
-
-    public void addNodeInterpreter( String node, String interpreter )
-    {
-        // do nothing, interpreters registered via device configuration
-    }
-
     public Set<String> getNodeInterpreters( String node )
     {
         return nodeDescriptions.get( node ).getInterpreters();
@@ -159,10 +134,5 @@ public class DeviceRegistration implements INodeRegistration, IHostAddressBook
     {
         Set<String> result = interpretersForProtocols.get( protocol );
         return result == null ? new HashSet<String>() : result;
-    }
-
-    public void deleteNodeInterpreter( String node, String interpreter )
-    {
-        // do nothing, interpreters registered via device configuration
     }
 }

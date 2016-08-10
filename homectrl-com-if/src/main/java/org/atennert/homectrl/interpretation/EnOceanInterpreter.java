@@ -16,20 +16,23 @@
 
 package org.atennert.homectrl.interpretation;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.atennert.com.communication.IDataAcceptance;
 import org.atennert.com.interpretation.IInterpreter;
-import org.atennert.com.registration.INodeRegistration;
 import org.atennert.com.util.DataContainer;
 import org.atennert.com.util.MapDataContainer;
 import org.atennert.com.util.MessageContainer;
+import org.atennert.com.util.Session;
 import org.atennert.homectrl.communication.Base64Coder;
 import org.atennert.homectrl.communication.CodingHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rx.Scheduler;
+import rx.Single;
+import rx.SingleSubscriber;
+
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Interpreter for EnOcean data.
@@ -58,17 +61,16 @@ public class EnOceanInterpreter implements IInterpreter
         return null;
     }
 
-    public String interpret( MessageContainer message, String sender, IDataAcceptance acceptance,
-            INodeRegistration nr )
-    {
-        log.trace( "interpreting: " + message );
-        if( message.hasException() || message.message == null )
+    @Override
+    public void interpret(MessageContainer msgContainer, Session session, IDataAcceptance acceptance, Scheduler scheduler) {
+        log.trace( "interpreting: " + msgContainer.message );
+        if( msgContainer.hasException() || msgContainer.message == null )
         {
-            return null;
+            session.call(null);
         }
 
         // message = packetType, isDataValid, lengthOptional, optional[], data[]
-        final byte[] byteMessage = Base64Coder.decode( message.message );
+        final byte[] byteMessage = Base64Coder.decode( msgContainer.message );
 
         final int optLen = CodingHelper.byteToInt( byteMessage[2] );
         final byte[] optional = new byte[optLen], data = new byte[byteMessage.length - 3 - optLen];
@@ -80,21 +82,34 @@ public class EnOceanInterpreter implements IInterpreter
 
         final String senderID = getSenderID( packetType, data );
 
-        final Map<String, Object> msgData = new HashMap<String, Object>();
+        final Map<String, Object> msgData = new HashMap<>();
 
         msgData.put( "time", Calendar.getInstance().getTime() );
         msgData.put( "type", packetType );
         msgData.put( "optional", optional );
         msgData.put( "data", data );
         msgData.put( "sender", senderID );
-        msgData.put( "valid", new Boolean( byteMessage[1] == 1 ) );
+        msgData.put( "valid", byteMessage[1] == 1);
 
-        acceptance.evaluateData( senderID, new MapDataContainer( msgData ) );
+        acceptance.accept( senderID, new MapDataContainer(msgData, new SingleSubscriber<DataContainer>() {
+            @Override
+            public void onSuccess(DataContainer dataContainer) {
+                Single.<String>from(null)
+                        .subscribeOn(session.scheduler)
+                        .subscribe(session);
+            }
 
-        return null;
+            @Override
+            public void onError(Throwable throwable) {
+                log.error("[EnOceanInterpreter.Subscriber.accept] ERROR");
+                Single.<String>from(null)
+                        .subscribeOn(session.scheduler)
+                        .subscribe(session);
+            }
+        }) );
     }
 
-    private static final String getSenderID( final int packetType, final byte[] data )
+    private static String getSenderID(final int packetType, final byte[] data )
     {
         final byte[] addrBytes = new byte[4];
         switch( packetType )
@@ -110,7 +125,7 @@ public class EnOceanInterpreter implements IInterpreter
         return null;
     }
 
-    private static final String getAddressString( final byte[] addrBytes )
+    private static String getAddressString(final byte[] addrBytes )
     {
         int addr = 0, cnt = 3;
         for( final byte b : addrBytes )

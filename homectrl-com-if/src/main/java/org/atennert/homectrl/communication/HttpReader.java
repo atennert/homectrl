@@ -21,34 +21,38 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.concurrent.ExecutionException;
 
 import org.atennert.com.interpretation.InterpreterManager;
 import org.atennert.com.util.MessageContainer;
+import org.atennert.com.util.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rx.Scheduler;
+import rx.Single;
 
 /**
  * This class handles HTTP requests.
  */
-public class HttpReader implements Runnable
+class HttpReader implements Runnable
 {
 
-    private Socket clientSocket = null;
-    private InterpreterManager im;
+    private final Socket clientSocket;
+    private final InterpreterManager im;
+    private final Scheduler scheduler;
 
     private static final Logger logger = LoggerFactory.getLogger( HttpReader.class );
 
     /**
      * Constructor.
      *
-     * @param communicator
-     * @param clientSocket
+     * @param im The InterpreterManager
+     * @param clientSocket The socket on which the connection is established
      */
-    public HttpReader( InterpreterManager im, Socket clientSocket)
+    HttpReader(InterpreterManager im, Socket clientSocket, Scheduler scheduler)
     {
         this.clientSocket = clientSocket;
         this.im = im;
+        this.scheduler = scheduler;
     }
 
     /**
@@ -59,80 +63,68 @@ public class HttpReader implements Runnable
     {
         try
         {
-            BufferedReader input = new BufferedReader( new InputStreamReader(
+            final BufferedReader input = new BufferedReader( new InputStreamReader(
                     clientSocket.getInputStream() ) );
-            OutputStream output = clientSocket.getOutputStream();
+            final OutputStream output = clientSocket.getOutputStream();
 
-            String clientAddress = clientSocket.getRemoteSocketAddress().toString();
+            final String clientAddress = clientSocket.getRemoteSocketAddress().toString();
             logger.info( "Got connection from: " + clientAddress );
 
-            String message;
-            String response = null;
-            MessageContainer msgContainer;
-
             // check the header
-            message = input.readLine() + "\n";
+            String message = input.readLine() + "\n";
             // if (message.equals("POST / HTTP/1.1")){
             if( message.startsWith( "POST" ) && message.endsWith( "HTTP/1.1\n" ) )
             {
 
-                msgContainer = HttpHelper.getContent( input );
+                final MessageContainer msgContainer = HttpHelper.getContent( input );
                 logger.info( "received message: " + msgContainer.message );
 
-                if( message != null )
-                {
-                    // forward message to interpreter
-                    try
-                    {
-                        response = im.interpret( msgContainer, (clientAddress.split( "/" )[1]) )
-                                .get();
-                    }
-                    catch( InterruptedException e )
-                    {
-                        logger.error( "Interpreter was interupted." );
-                    }
-                    catch( ExecutionException e )
-                    {
-                        logger.error( "An error occured." );
-                    }
-                    catch( InstantiationException e )
-                    {
-                        logger.error( "An error occured." );
-                    }
-                    catch( IllegalAccessException e )
-                    {
-                        logger.error( "An error occured." );
-                    }
-                }
+                // forward message to interpreter
+                Single.just(msgContainer)
+                        .subscribe(im.interpret(new Session(scheduler) {
+                            @Override
+                            public String getSender() {
+                                return clientAddress.split( "/" )[1];
+                            }
 
-                // reply to sender
-                if( response == null || response.equals( "" ) )
-                {
-                    output.write( "HTTP/1.1 200 OK\r\n\r\n".getBytes() );
-                }
-                else
-                {
-                    output.write( "HTTP/1.1 200 OK\r\n".getBytes() );
-                    output.write( ("Content-type: text/" + msgContainer.interpreter + "\r\n")
-                            .getBytes() );
-                    output.write( ("Content-length: " + response.length() + "\r\n\r\n").getBytes() );
-                    output.write( response.getBytes() );
-                }
-                // }else if (message.equals("GET / HTTP/1.1\n")){
+                            @Override
+                            public void call(String response) {
+                                // reply to sender
+                                try
+                                {
+                                    if (response == null || response.equals("")) {
+                                        output.write("HTTP/1.1 200 OK\r\n\r\n".getBytes());
+                                    } else {
+                                        output.write("HTTP/1.1 200 OK\r\n".getBytes());
+                                        output.write(("Content-type: text/" + msgContainer.interpreter + "\r\n").getBytes());
+                                        output.write(("Content-length: " + response.length() + "\r\n\r\n").getBytes());
+                                        output.write(response.getBytes());
+                                    }
+                                    output.flush();
+                                    output.close();
+                                    input.close();
+                                    clientSocket.close();
+                                }
+                                catch (IOException e)
+                                {
+                                    logger.error( "An I/O error occured." );
+                                }
+                            }
+                        }));
+            // }else if (message.equals("GET / HTTP/1.1\n")){
             }
             else
             {
                 output.write( "HTTP/1.1 501 Not Implemented\n\n".getBytes() );
+                output.flush();
+                output.close();
+                input.close();
+                clientSocket.close();
             }
-
-            output.flush();
-            output.close();
-            input.close();
-            clientSocket.close();
         }
         catch( IOException e )
         {
-            logger.error( "An I/O error occured." );
+            logger.error( "An I/O error occurred." );
         }
     }
 }

@@ -16,23 +16,19 @@
 
 package org.atennert.homectrl.communication;
 
-import gnu.io.CommPortIdentifier;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
-import gnu.io.UnsupportedCommOperationException;
+import gnu.io.*;
+import org.atennert.com.communication.AbstractReceiver;
+import org.atennert.com.util.MessageContainer;
+import org.atennert.com.util.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Required;
+import rx.Single;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.TooManyListenersException;
-
-import org.atennert.com.communication.AbstractReceiver;
-import org.atennert.com.util.MessageContainer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
 
 /**
  * Receiver for EnOcean messages.
@@ -48,10 +44,10 @@ public class EnOceanReceiver extends AbstractReceiver
     private SerialPort serialPort;
     private InputStream inputStream;
     private Boolean serialPortOpened = false;
-    private final int baudrate = 57600;
-    private final int dataBits = SerialPort.DATABITS_8;
-    private final int stopBits = SerialPort.STOPBITS_1;
-    private final int parity = SerialPort.PARITY_NONE;
+    private static final int BAUD_RATE = 57600;
+    private static final int DATA_BITS = SerialPort.DATABITS_8;
+    private static final int STOP_BITS = SerialPort.STOPBITS_1;
+    private static final int PARITY = SerialPort.PARITY_NONE;
     private String portName = null;
 
     @Required
@@ -61,16 +57,10 @@ public class EnOceanReceiver extends AbstractReceiver
     }
 
     @Override
-    public String getAddress()
-    {
-        return portName;
-    }
-
-    @Override
     public void run()
     {
         boolean stop = false;
-        if( openSerialPort( portName ) != true )
+        if(!openSerialPort(portName))
         {
             log.warn( "EnOcean server stopped prematurely." );
             return;
@@ -96,10 +86,10 @@ public class EnOceanReceiver extends AbstractReceiver
     /**
      * Initialize port connection
      *
-     * @param portName
+     * @param portName The name of the port to open
      * @return Serial port opened
      */
-    boolean openSerialPort( String portName )
+    private boolean openSerialPort(String portName)
     {
         if( portName == null )
         {
@@ -107,7 +97,7 @@ public class EnOceanReceiver extends AbstractReceiver
         }
 
         Boolean foundPort = false;
-        if( serialPortOpened != false )
+        if(serialPortOpened)
         {
             log.error( "Serialport already opened" );
             return false;
@@ -124,7 +114,7 @@ public class EnOceanReceiver extends AbstractReceiver
                 break;
             }
         }
-        if( foundPort != true )
+        if(!foundPort)
         {
             log.error( "Serial port not found: " + portName );
             return false;
@@ -139,7 +129,7 @@ public class EnOceanReceiver extends AbstractReceiver
 
             serialPort.notifyOnDataAvailable( true );
 
-            serialPort.setSerialPortParams( baudrate, dataBits, stopBits, parity );
+            serialPort.setSerialPortParams(BAUD_RATE, DATA_BITS, STOP_BITS, PARITY);
 
             log.info( "Serial port started." );
         }
@@ -167,9 +157,9 @@ public class EnOceanReceiver extends AbstractReceiver
     /**
      * Close serial port.
      */
-    void closeSerialPort()
+    private void closeSerialPort()
     {
-        if( serialPortOpened == true )
+        if(serialPortOpened)
         {
             log.info( "Close serial port" );
             serialPort.close();
@@ -184,13 +174,13 @@ public class EnOceanReceiver extends AbstractReceiver
     /**
      * Read data from serial port and forward to interpreter.
      */
-    void serialPortDataAvailable()
+    private void serialPortDataAvailable()
     {
         try
         {
             int num;
             final byte[] sync = new byte[1];
-            byte[] header = new byte[5], data, optional;
+            byte[] header, data, optional;
             final byte[] checksumValue = new byte[1];
 
             while( inputStream.available() > 0 )
@@ -272,30 +262,31 @@ public class EnOceanReceiver extends AbstractReceiver
                 System.arraycopy( optional, 0, message, 3, optional.length );
                 System.arraycopy( data, 0, message, 3 + optional.length, data.length );
 
-                interpreter
-                        .interpret(
-                                new MessageContainer( "enocean", new String( Base64Coder
-                                        .encode( message ) ) ), null );
+                Single.just(new MessageContainer( "enocean", new String( Base64Coder
+                        .encode( message ) ) ))
+                        .subscribe(interpreter.interpret(new Session(scheduler) {
+                            @Override
+                            public void call(String s) {
+                                // Nothing to do
+                            }
+
+                            @Override
+                            public String getSender() {
+                                return portName;
+                            }
+                        }));
             }
         }
         catch( final IOException ex )
         {
             log.error( ex.getMessage() );
         }
-        catch( InstantiationException e )
-        {
-            log.error( e.getMessage() );
-        }
-        catch( IllegalAccessException e )
-        {
-            log.error( e.getMessage() );
-        }
     }
 
     /**
      * Event listener for serial port. Is called when new data is available.
      */
-    class serialPortEventListener implements SerialPortEventListener
+    private class serialPortEventListener implements SerialPortEventListener
     {
         public void serialEvent( SerialPortEvent event )
         {

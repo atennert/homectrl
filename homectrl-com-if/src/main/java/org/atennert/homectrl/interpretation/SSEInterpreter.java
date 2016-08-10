@@ -21,6 +21,8 @@ import org.atennert.com.interpretation.IInterpreter;
 import org.atennert.com.registration.INodeRegistration;
 import org.atennert.com.util.DataContainer;
 import org.atennert.com.util.MessageContainer;
+import org.atennert.com.util.Session;
+import rx.Scheduler;
 
 /**
  * Interpreter for the specific use with the SSEServer class. <br>
@@ -29,24 +31,21 @@ import org.atennert.com.util.MessageContainer;
  */
 public class SSEInterpreter implements IInterpreter
 {
-
+    @Override
     public DataContainer decode( MessageContainer message )
     {
         // TODO Auto-generated method stub
         return null;
     }
 
+    @Override
     public String encode( DataContainer data )
     {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public String interpret( MessageContainer message, String sender, IDataAcceptance acceptance,
-            INodeRegistration nr )
-    {
-        // TODO check client and register it for SSEs
-        return null;
+    @Override
+    public void interpret(MessageContainer messageContainer, Session session, IDataAcceptance iDataAcceptance, Scheduler scheduler) {
     }
-
 }
