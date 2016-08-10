@@ -26,7 +26,7 @@ public class AtmelInterpreter extends ParameterInterpreter
     @Override
     public String encode( DataContainer data )
     {
-        if( data.dataId != null && !data.dataId.isEmpty() )
+        if( data != null && data.dataId != null && !data.dataId.isEmpty() )
         {
             return "OUT=&" + super.encode( data ) + "&SUB=Senden";
         }

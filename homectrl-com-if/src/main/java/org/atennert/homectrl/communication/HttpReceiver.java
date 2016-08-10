@@ -7,7 +7,6 @@ public class HttpReceiver extends AbstractHttpReceiver
     @Override
     protected void handleReceive( Socket clientSocket )
     {
-        scheduler.createWorker().schedule(() ->
-                new Thread( new HttpReader( interpreter, clientSocket, scheduler ) ).start());
+        new Thread( new HttpReader( interpreter, clientSocket, scheduler ) ).start();
     }
 }

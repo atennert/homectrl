@@ -16,21 +16,20 @@
 
 package org.atennert.homectrl.communication;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-
 import org.atennert.com.communication.AbstractReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
-import rx.Scheduler;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 /**
  * Instances of this class wait at a certain port for incoming HTTP messages and
  * forward them to an abstract handle method.
  */
-public abstract class AbstractHttpReceiver extends AbstractReceiver
+abstract class AbstractHttpReceiver extends AbstractReceiver
 {
     private final Logger log = LoggerFactory.getLogger( this.getClass() );
 
@@ -57,7 +56,7 @@ public abstract class AbstractHttpReceiver extends AbstractReceiver
         openServerSocket();
         while( !isInterrupted() )
         {
-            Socket clientSocket = null;
+            Socket clientSocket;
             try
             {
                 clientSocket = this.serverSocket.accept();

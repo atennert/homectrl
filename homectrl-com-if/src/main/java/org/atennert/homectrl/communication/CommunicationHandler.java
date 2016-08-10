@@ -120,10 +120,12 @@ public class CommunicationHandler implements IDataAcceptance
         }
     }
 
-    private SingleSubscriber<DataContainer> resultSubscriber = new SingleSubscriber<DataContainer>() {
+    private final SingleSubscriber<DataContainer> resultSubscriber = new SingleSubscriber<DataContainer>() {
         @Override
         public void onSuccess(DataContainer container) {
-            log.debug( "[resultSubscriber.onSuccess] " + container.dataId + " := " + container.data );
+            if (container != null) {
+                log.debug("[resultSubscriber.onSuccess] " + container.dataId + " := " + container.data);
+            }
         }
 
         @Override

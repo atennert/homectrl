@@ -46,6 +46,7 @@ public class ParameterInterpreter implements IInterpreter
 
         if( map.size() < 1 || message.hasException())
         {
+            log.warn( "interpreting: " + message.error );
             return null;
         }
         else
@@ -69,7 +70,7 @@ public class ParameterInterpreter implements IInterpreter
 
             return result.replaceFirst( "&", "" );
         }
-        else if( data.dataId != null && !data.dataId.isEmpty() )
+        else if( data != null && data.dataId != null && !data.dataId.isEmpty() )
         {
             return data.dataId + "=" + formatValue( data.data );
         }

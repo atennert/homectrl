@@ -10,7 +10,7 @@ public interface IHostAddressBook
      * @param deviceId
      * @return
      */
-    public DataDescription getHostInformation( int deviceId );
+    DataDescription getHostInformation( int deviceId );
 
     /**
      * Get the devices of a host, identified by the hosts address and the IDs of
@@ -23,5 +23,5 @@ public interface IHostAddressBook
      * @return the homectrl device descriptions of all identified (registered)
      *         devices
      */
-    public Set<DataDescription> getHostDevices( String senderAddress, Set<String> referenceIds );
+    Set<DataDescription> getHostDevices( String senderAddress, Set<String> referenceIds );
 }

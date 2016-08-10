@@ -57,9 +57,8 @@
   </bean>
   
   <bean id="interpreterManager" class="org.atennert.com.interpretation.InterpreterManager">
-    <property name="nodeRegistration" ref="deviceRegistration"/>
     <property name="dataAcceptance" ref="communicationHandler"/>
-    <property name="interpreter">
+    <property name="interpreters">
       <map>
         <entry key="params">
           <bean class="org.atennert.homectrl.interpretation.ParameterInterpreter"/>
@@ -98,20 +97,16 @@
     <property name="nodeRegistration" ref="deviceRegistration"/>
     <property name="scheduler" ref="scheduler"/>
     <property name="receivers">
-      <map>
-        <entry key="http">
-          <bean class="org.atennert.homectrl.communication.HttpReceiver">
-            <property name="interpreterManager" ref="interpreterManager"/>
-            <property name="address" value="${address.homectrl.server.http}"/>
-          </bean>
-        </entry>
-        <entry key="enocean">
-          <bean class="org.atennert.homectrl.communication.EnOceanReceiver">
-            <property name="interpreterManager" ref="interpreterManager"/>
-            <property name="address" value="${address.homectrl.server.enocean}"/>
-          </bean>
-        </entry>
-      </map>
+      <set>
+        <bean class="org.atennert.homectrl.communication.HttpReceiver">
+          <property name="interpreterManager" ref="interpreterManager"/>
+          <property name="address" value="${address.homectrl.server.http}"/>
+        </bean>
+        <bean class="org.atennert.homectrl.communication.EnOceanReceiver">
+          <property name="interpreterManager" ref="interpreterManager"/>
+          <property name="address" value="${address.homectrl.server.enocean}"/>
+        </bean>
+      </set>
     </property>
   </bean>
 </beans>
