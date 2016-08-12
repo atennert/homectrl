@@ -1,4 +1,7 @@
 
+group = "org.atennert.homectrl"
+version = 3.1
+
 buildscript {
     repositories {
         mavenCentral()
@@ -13,8 +16,6 @@ allprojects {
 
 subprojects {
     apply plugin: 'java'
-
-    group = "org.atennert.homectrl"
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
