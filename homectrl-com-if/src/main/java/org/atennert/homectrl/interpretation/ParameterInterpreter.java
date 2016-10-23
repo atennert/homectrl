@@ -83,6 +83,7 @@ public class ParameterInterpreter implements IInterpreter
 
         if (messageContainer.hasException() && !MessageContainer.Exception.EMPTY.equals( messageContainer.error )){
             session.call(null);
+            return;
         }
 
         Map<String, Object> map = translateMessage( messageContainer.message );
@@ -107,7 +108,7 @@ public class ParameterInterpreter implements IInterpreter
                 }) );
     }
 
-    private Map<String, Object> translateMessage( String message )
+    protected Map<String, Object> translateMessage( String message )
     {
         Map<String, Object> map = new HashMap<>();
         if( message != null )
