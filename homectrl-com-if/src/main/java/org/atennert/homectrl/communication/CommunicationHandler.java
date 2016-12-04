@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
+import java.util.function.Consumer;
 
 import org.atennert.com.communication.ICommunicatorAccess;
 import org.atennert.com.communication.IDataAcceptance;
@@ -32,6 +33,7 @@ import org.atennert.homectrl.event.EventBus;
 import org.atennert.homectrl.event.Subscribe;
 import org.atennert.homectrl.registration.DataDescription;
 import org.atennert.homectrl.registration.IHostAddressBook;
+import org.atennert.homectrl.util.EventObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +54,8 @@ public class CommunicationHandler implements IDataAcceptance
 
     private EventBus eventBus;
 
+    private EventObserver observer = EventObserver.STUB;
+
     @Autowired
     public void setCommunicator( ICommunicatorAccess communicator )
     {
@@ -70,16 +74,22 @@ public class CommunicationHandler implements IDataAcceptance
         this.hostAddressBook = hostAddressBook;
     }
 
+    public void setObserver(final EventObserver observer)
+    {
+        this.observer = observer;
+    }
+
     @Override
-    public void accept(String senderAddress, DataContainer data) {
-        evaluateData(senderAddress, data)
-                .subscribe(data.subscriber);
+    public void accept( String senderAddress, DataContainer data )
+    {
+        evaluateData( senderAddress, data )
+                .subscribe( data.subscriber );
     }
 
     private Single<DataContainer> evaluateData( String senderAddress, DataContainer data )
     {
-        Map<String, Object> valueMap;
-        if( data instanceof MapDataContainer )
+        final Map<String, Object> valueMap;
+        if (data instanceof MapDataContainer)
         {
             valueMap = ((MapDataContainer) data).getData();
         }
@@ -91,17 +101,19 @@ public class CommunicationHandler implements IDataAcceptance
         Set<DataDescription> deviceDescriptions = hostAddressBook.getHostDevices( senderAddress,
                 valueMap.keySet() );
 
-        for( DataDescription description : deviceDescriptions )
-        {
-            // we know, that the value is a String since it comes from the
-            // interpreter
-            eventBus.post(
-                    description.id,
-                    new EDeviceValueUpdate( description.id,
-                            DataType.getTypeValue( description.dataType,
-                                    (String) valueMap.get( description.referenceId ) ) ) );
-        }
-        return Single.just(null);
+        deviceDescriptions.stream()
+                .peek( description -> observer.notify( description, valueMap.get( description.referenceId ) ) )
+                .forEach( description ->
+                {
+                    // we know, that the value is a String since it comes from the
+                    // interpreter
+                    eventBus.post(
+                            description.id,
+                            new EDeviceValueUpdate( description.id,
+                                    DataType.getTypeValue( description.dataType,
+                                            (String) valueMap.get( description.referenceId ) ) ) );
+                } );
+        return Single.just( null );
     }
 
     @Subscribe
@@ -110,26 +122,31 @@ public class CommunicationHandler implements IDataAcceptance
         log.info( "[control] " + event.actorId + " := " + event.value );
         DataDescription entry = hostAddressBook.getHostInformation( event.actorId );
 
-        if( entry == null )
+        if (entry == null)
         {
             log.error( "[control] tried to control unregistered device: " + event.actorId );
         }
         else
         {
             communicator.send( entry.hostName, new DataContainer( entry.referenceId, event.value, resultSubscriber ) );
+            observer.notify( entry, event.value );
         }
     }
 
-    private final SingleSubscriber<DataContainer> resultSubscriber = new SingleSubscriber<DataContainer>() {
+    private final SingleSubscriber<DataContainer> resultSubscriber = new SingleSubscriber<DataContainer>()
+    {
         @Override
-        public void onSuccess(DataContainer container) {
-            if (container != null) {
-                log.debug("[resultSubscriber.onSuccess] " + container.dataId + " := " + container.data);
+        public void onSuccess( DataContainer container )
+        {
+            if (container != null)
+            {
+                log.debug( "[resultSubscriber.onSuccess] " + container.dataId + " := " + container.data );
             }
         }
 
         @Override
-        public void onError(Throwable throwable) {
+        public void onError( Throwable throwable )
+        {
             log.warn( "[resultSubscriber.onError] " + throwable.getMessage() );
         }
     };

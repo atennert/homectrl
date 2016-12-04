@@ -31,6 +31,8 @@ dependencies {
     compile project(':dataprocessing')
     compile project(':controls')
     compile project(':sensors')
-    compile "org.springframework:spring-context:4.0.2.RELEASE"
+    compile "org.springframework:spring-context:4.3.3.RELEASE"
+    compile "org.springframework:spring-jdbc:4.3.3.RELEASE"
+    compile "org.xerial:sqlite-jdbc:3.14+"
     compile "org.json:json:20140107"
 }

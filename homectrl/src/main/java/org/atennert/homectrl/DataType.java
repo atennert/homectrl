@@ -20,7 +20,7 @@ public enum DataType
                 return value == null ? "" : value;
 
             case BOOL :
-                return new Boolean(Boolean.parseBoolean(value) || ( Integer.parseInt(getValidNumberString(value)) > 1 ));
+                return Boolean.parseBoolean( value ) || (Integer.parseInt( getValidNumberString( value ) ) > 1);
 
             default :
                 return null;
@@ -29,7 +29,7 @@ public enum DataType
 
     private static String getValidNumberString(String value)
     {
-        return value == null || "".equals(value) ? "0" : value;
+        return value == null || value.isEmpty() ? "0" : value;
     }
 
     public static DataType getDataTypeFromString(String type){

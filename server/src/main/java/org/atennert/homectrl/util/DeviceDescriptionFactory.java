@@ -16,19 +16,6 @@
 
 package org.atennert.homectrl.util;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.atennert.homectrl.DataType;
 import org.atennert.homectrl.controls.AbstractController;
 import org.atennert.homectrl.dataprocessing.AbstractDataProcessor;
@@ -38,8 +25,17 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.util.*;
 
 public class DeviceDescriptionFactory
 {
@@ -71,7 +67,7 @@ public class DeviceDescriptionFactory
         controls = new HashSet<AbstractController<?>>();
         defaultValues = new HashMap<Integer, Object>();
 
-        Resource resource = new ClassPathResource(configuration);
+        Resource resource = new FileSystemResource(configuration);
 
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()));

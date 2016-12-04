@@ -28,6 +28,14 @@
   <context:annotation-config/>
   
 
+  <bean id="eventDistributor" class="org.atennert.homectrl.util.EventDistributor">
+    <constructor-arg index="0">
+      <list>
+        <ref bean="ioLogger"/>
+      </list>
+    </constructor-arg>
+  </bean>
+
   <bean id="deviceRegistration" class="org.atennert.homectrl.registration.DeviceRegistration">
     <property name="nodeDescriptions">
       <bean factory-bean="deviceDescriptionFactory" factory-method="getNodeDescriptions"/>
@@ -53,7 +61,8 @@
   </bean>
   
   <bean id="communicationHandler" class="org.atennert.homectrl.communication.CommunicationHandler">
-    <property name="hostLibrary" ref="deviceRegistration"/>    
+    <property name="hostLibrary" ref="deviceRegistration"/>
+    <property name="observer" ref="eventDistributor" />
   </bean>
   
   <bean id="interpreterManager" class="org.atennert.com.interpretation.InterpreterManager">
@@ -100,11 +109,11 @@
       <set>
         <bean class="org.atennert.homectrl.communication.HttpReceiver">
           <property name="interpreterManager" ref="interpreterManager"/>
-          <property name="address" value="${address.homectrl.server.http}"/>
+          <property name="address" value="${homectrl.server.address.http}"/>
         </bean>
         <bean class="org.atennert.homectrl.communication.EnOceanReceiver">
           <property name="interpreterManager" ref="interpreterManager"/>
-          <property name="address" value="${address.homectrl.server.enocean}"/>
+          <property name="address" value="${homectrl.server.address.enocean}"/>
         </bean>
       </set>
     </property>
