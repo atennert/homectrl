@@ -12,10 +12,3 @@ CREATE TABLE IF NOT EXISTS events (
     time DATETIME DEFAULT CURRENT_TIMESTAMP,
     value TEXT NOT NULL
 );
-
-/* store only the events of the last 5 weeks */
-CREATE TRIGGER IF NOT EXISTS cleanup
-    AFTER INSERT ON events
-    BEGIN
-        DELETE FROM events WHERE time < datetime('now', '-35 days');
-    END;
