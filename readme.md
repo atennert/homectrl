@@ -1,6 +1,6 @@
-===================================
- HomeCtrl
-===================================
+
+# HomeCtrl
+
 
 Contents:
 - Introduction
@@ -12,10 +12,7 @@ Contents:
 - Communication protocols
 - Copyright
 
-
-===================================
- Introduction
-===================================
+## Introduction
 
 HomeCtrl is an event based home or building automation system. The name is constructed from "home"
 and the label of the English keyboard control button "Ctrl".
@@ -41,9 +38,7 @@ behavior of the application is defined in a device configuration file, which is 
 contains all devices, the processors and the controls with their individual settings.
 
 
-===================================
- How to get the example working?
-===================================
+## How to get the example working?
 
 - rename example-addresses.properties to addresses.properties
 - rename example-configuration.json to configuration.json
@@ -52,44 +47,32 @@ contains all devices, the processors and the controls with their individual sett
 Compile the server project as runnable Jar, start the application and have fun :)
 
 
-===================================
- Device configuration
-===================================
+## Device configuration
  
 TODO
 
 
-===================================
- Event bus
-===================================
+## Event bus
 
 TODO
 
 
-===================================
- How to add control modules?
-===================================
+## How to add control modules?
 
 TODO
 
 
-===================================
- How to add data processors?
-===================================
+## How to add data processors?
 
 TODO
 
 
-===================================
- Communication protocols
-===================================
+## Communication protocols
 
 TODO
 
 
-===================================
- Copyright
-===================================
+## Copyright
 
 The following copyright license is effective for all resources of the HomeCtrl software, unless
 there is a different copyright information in or for the resource. If a resource has it's own
@@ -97,7 +80,7 @@ copyright information, then the resources license statement replaces the license
 for this particular resource.
 
 
-Copyright 2015 Andreas Tennert
+Copyright 2016 Andreas Tennert
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
