@@ -142,7 +142,7 @@
 {
     "type": "processor",
     "name": "estimatedOutsideTemperature",
-    "class": "org.atennert.homectrl.dataprocessing.LowPrioritizingDoubleProcessor",
+    "class": "de.atennert.homectrl.dataprocessing.LowPrioritizingDoubleProcessor",
     "id": 5,
     "value": 20,
     "data": "double",
@@ -152,7 +152,7 @@
 {
     "type": "processor",
     "name": "highestOutsideBrightness",
-    "class": "org.atennert.homectrl.dataprocessing.HighIntegerProcessor",
+    "class": "de.atennert.homectrl.dataprocessing.HighIntegerProcessor",
     "id": 8,
     "value": 600,
     "data": "integer",
@@ -161,7 +161,7 @@
 {
     "type": "processor",
     "name": "isItCloudyOrDark",
-    "class": "org.atennert.homectrl.dataprocessing.IntegerIsUnderLimitProcessor",
+    "class": "de.atennert.homectrl.dataprocessing.IntegerIsUnderLimitProcessor",
     "id": 9,
     "value": false,
     "data": "boolean",
@@ -171,7 +171,7 @@
 {
     "type": "processor",
     "name": "heatingActive",
-    "class": "org.atennert.homectrl.dataprocessing.LogicalAndProcessor",
+    "class": "de.atennert.homectrl.dataprocessing.LogicalAndProcessor",
     "id": 10,
     "value": false,
     "data": "boolean",
@@ -180,7 +180,7 @@
 {
     "type": "control",
     "name": "workRoomHeatingController",
-    "class": "org.atennert.homectrl.controls.ActivatableHeatingController",
+    "class": "de.atennert.homectrl.controls.ActivatableHeatingController",
     "actorId": 10001,
     "value": false,
     "outsideSensorId": 5,
@@ -192,7 +192,7 @@
 {
     "type": "control",
     "name": "livingRoomHeatingController",
-    "class": "org.atennert.homectrl.controls.ActivatableHeatingController",
+    "class": "de.atennert.homectrl.controls.ActivatableHeatingController",
     "actorId": 10002,
     "value": false,
     "outsideSensorId": 5,

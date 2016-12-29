@@ -30,8 +30,8 @@
   
   <context:annotation-config/>
 
-  <bean id="eventBus" class="org.atennert.homectrl.event.EventBus" />
+  <bean id="eventBus" class="de.atennert.homectrl.event.EventBus" />
   
-  <bean id="eventBusPostProcessor" class="org.atennert.homectrl.util.EventBusPostProcessor"/>
+  <bean id="eventBusPostProcessor" class="de.atennert.homectrl.util.EventBusPostProcessor"/>
 
 </beans>

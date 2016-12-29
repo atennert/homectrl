@@ -28,7 +28,7 @@
   <context:annotation-config/>
   
 
-  <bean id="eventDistributor" class="org.atennert.homectrl.util.EventDistributor">
+  <bean id="eventDistributor" class="de.atennert.homectrl.util.EventDistributor">
     <constructor-arg index="0">
       <list>
         <ref bean="ioLogger"/>
@@ -36,7 +36,7 @@
     </constructor-arg>
   </bean>
 
-  <bean id="deviceRegistration" class="org.atennert.homectrl.registration.DeviceRegistration">
+  <bean id="deviceRegistration" class="de.atennert.homectrl.registration.DeviceRegistration">
     <property name="nodeDescriptions">
       <bean factory-bean="deviceDescriptionFactory" factory-method="getNodeDescriptions"/>
     </property>
@@ -60,33 +60,33 @@
     </property>
   </bean>
   
-  <bean id="communicationHandler" class="org.atennert.homectrl.communication.CommunicationHandler">
+  <bean id="communicationHandler" class="de.atennert.homectrl.communication.CommunicationHandler">
     <property name="hostLibrary" ref="deviceRegistration"/>
     <property name="observer" ref="eventDistributor" />
   </bean>
   
-  <bean id="interpreterManager" class="org.atennert.com.interpretation.InterpreterManager">
+  <bean id="interpreterManager" class="de.atennert.com.interpretation.InterpreterManager">
     <property name="dataAcceptance" ref="communicationHandler"/>
     <property name="interpreters">
       <map>
         <entry key="params">
-          <bean class="org.atennert.homectrl.interpretation.ParameterInterpreter"/>
+          <bean class="de.atennert.homectrl.interpretation.ParameterInterpreter"/>
         </entry>
         <entry key="atmel">
-          <bean class="org.atennert.homectrl.interpretation.AtmelInterpreter"/>
+          <bean class="de.atennert.homectrl.interpretation.AtmelInterpreter"/>
         </entry>
         <entry key="enocean">
-          <bean class="org.atennert.homectrl.interpretation.EnOceanInterpreter"/>
+          <bean class="de.atennert.homectrl.interpretation.EnOceanInterpreter"/>
         </entry>
       </map>
     </property>
   </bean>
   
-  <bean id="senderManager" class="org.atennert.com.communication.SenderManager">
+  <bean id="senderManager" class="de.atennert.com.communication.SenderManager">
     <property name="sender">
       <map>
         <entry key="http">
-          <bean class="org.atennert.homectrl.communication.HttpSender"/>
+          <bean class="de.atennert.homectrl.communication.HttpSender"/>
         </entry>
       </map>
     </property>
@@ -100,18 +100,18 @@
     </constructor-arg>
   </bean>
 
-  <bean id="communicator" class="org.atennert.com.communication.Communicator">
+  <bean id="communicator" class="de.atennert.com.communication.Communicator">
     <property name="interpreterManager" ref="interpreterManager"/>
     <property name="senderManager" ref="senderManager"/>
     <property name="nodeRegistration" ref="deviceRegistration"/>
     <property name="scheduler" ref="scheduler"/>
     <property name="receivers">
       <set>
-        <bean class="org.atennert.homectrl.communication.HttpReceiver">
+        <bean class="de.atennert.homectrl.communication.HttpReceiver">
           <property name="interpreterManager" ref="interpreterManager"/>
           <property name="address" value="${homectrl.server.address.http}"/>
         </bean>
-        <bean class="org.atennert.homectrl.communication.EnOceanReceiver">
+        <bean class="de.atennert.homectrl.communication.EnOceanReceiver">
           <property name="interpreterManager" ref="interpreterManager"/>
           <property name="address" value="${homectrl.server.address.enocean}"/>
         </bean>

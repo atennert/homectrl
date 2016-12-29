@@ -42,7 +42,7 @@
         <jdbc:script location="classpath:homectrlLog-schema.sql" />
     </jdbc:initialize-database>
 
-    <bean id="ioLogger" class="org.atennert.homectrl.util.ServerIOLogger">
+    <bean id="ioLogger" class="de.atennert.homectrl.util.ServerIOLogger">
         <property name="dataSource" ref="logDbDataSource" />
         <property name="dataDescriptions">
             <bean factory-bean="deviceDescriptionFactory" factory-method="getDataDescriptions"/>

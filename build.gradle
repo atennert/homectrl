@@ -4,7 +4,7 @@ version = 3.1
 
 buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.1.6.RELEASE")
@@ -21,7 +21,8 @@ subprojects {
     targetCompatibility = 1.8
 
     repositories {
-        mavenCentral()
+        jcenter()
+        maven { url "http://dl.bintray.com/atennert/com" }
         flatDir {
             dirs 'libs'
         }
