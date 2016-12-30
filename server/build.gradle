@@ -7,14 +7,14 @@ apply plugin: "spring-boot"
 archivesBaseName = "server"
 version = "0.0.1"
 
-mainClassName = "org.atennert.homectrl.Main"
+mainClassName = "de.atennert.homectrl.Main"
 
 jar {
     baseName = "HomeCtrl"
     version = ""
 
     manifest {
-        attributes 'Main-Class': 'org.atennert.homectrl.Main'
+        attributes 'Main-Class': 'de.atennert.homectrl.Main'
     }
 
     from {
@@ -31,6 +31,8 @@ dependencies {
     compile project(':dataprocessing')
     compile project(':controls')
     compile project(':sensors')
-    compile "org.springframework:spring-context:4.0.2.RELEASE"
+    compile "org.springframework:spring-context:4.3.3.RELEASE"
+    compile "org.springframework:spring-jdbc:4.3.3.RELEASE"
+    compile "org.xerial:sqlite-jdbc:3.14+"
     compile "org.json:json:20140107"
 }

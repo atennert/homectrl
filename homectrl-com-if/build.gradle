@@ -7,4 +7,5 @@ version = "0.0.2"
 
 dependencies {
     compile project(':homectrl')
+    compile 'de.atennert:com:2+'
 }

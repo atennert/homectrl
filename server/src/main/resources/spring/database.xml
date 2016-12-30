@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--*******************************************************************************
+ * Copyright 2016 Andreas Tennert
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xsi:schemaLocation="
+          http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans.xsd
+          http://www.springframework.org/schema/context
+          http://www.springframework.org/schema/context/spring-context.xsd
+          http://www.springframework.org/schema/jdbc
+          http://www.springframework.org/schema/jdbc/spring-jdbc.xsd"
+       default-init-method="init"
+       default-destroy-method="dispose">
+
+    <context:annotation-config/>
+
+
+    <bean id="logDbDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${homectrl.server.logDb.driverClassName}" />
+        <property name="url" value="${homectrl.server.logDb.url}" />
+        <property name="username" value="${homectrl.server.logDb.username}" />
+        <property name="password" value="${homectrl.server.logDb.password}" />
+    </bean>
+
+    <jdbc:initialize-database data-source="logDbDataSource" enabled="true">
+        <jdbc:script location="classpath:homectrlLog-schema.sql" />
+    </jdbc:initialize-database>
+
+    <bean id="ioLogger" class="de.atennert.homectrl.util.ServerIOLogger">
+        <property name="dataSource" ref="logDbDataSource" />
+        <property name="dataDescriptions">
+            <bean factory-bean="deviceDescriptionFactory" factory-method="getDataDescriptions"/>
+        </property>
+    </bean>
+</beans>

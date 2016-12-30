@@ -1,0 +1,204 @@
+[
+{
+    "type": "node",
+    "name": "workRoomNode",
+    "sendAddresses":[
+    {
+        "protocol": "http",
+        "address": "192.168.3.21",
+        "port": "2354"
+    }
+    ],
+    "receiveAddresses":[
+    {
+        "protocol": "http",
+        "address": "192.168.3.21",
+        "port": "80"
+    }
+    ],
+    "interpreters": ["atmel"],
+    "devices": [
+    {
+        "type": "actor",
+        "name": "workRoomHeating",
+        "id": 10001,
+        "reference": "A",
+        "data": "bool",
+        "value": false
+    },
+    {
+        "type": "sensor",
+        "name": "workRoomOutsideTemperature",
+        "id": 1,
+        "reference": "to",
+        "data": "double",
+        "value": 20
+    },
+    {
+        "type": "sensor",
+        "name": "workRoomInsideTemperature",
+        "id": 2,
+        "reference": "ti",
+        "data": "double",
+        "value": 25
+    },
+    {
+        "type": "sensor",
+        "name": "workRoomOutsideBrightness",
+        "id": 6,
+        "reference": "l",
+        "data": "integer",
+        "value": 600
+    }
+    ]
+},
+{
+    "type": "node",
+    "name": "livingRoomNode",
+    "sendAddresses":[
+    {
+        "protocol": "http",
+        "address": "192.168.3.22",
+        "port": "2354"
+    }
+    ],
+    "receiveAddresses":[
+    {
+        "protocol": "http",
+        "address": "192.168.3.22",
+        "port": "80"
+    }
+    ],
+    "interpreters": ["atmel"],
+    "devices": [
+    {
+        "type": "actor",
+        "name": "livingRoomHeating",
+        "id": 10002,
+        "reference": "A",
+        "data": "bool",
+        "value": false
+    },
+    {
+        "type": "sensor",
+        "name": "livingRoomOutsideTemperature",
+        "id": 3,
+        "reference": "to",
+        "data": "double",
+        "value": 20
+    },
+    {
+        "type": "sensor",
+        "name": "livingRoomInsideTemperature",
+        "id": 4,
+        "reference": "ti",
+        "data": "double",
+        "value": 25
+    },
+    {
+        "type": "sensor",
+        "name": "livingRoomOutsideBrightness",
+        "id": 7,
+        "reference": "l",
+        "data": "integer",
+        "value": 600
+    }
+    ]
+},
+{
+    "type": "node",
+    "name": "server",
+    "sendAddresses":[
+    {
+        "protocol": "http",
+        "address": "192.168.0.2",
+        "port": "80"
+    }
+    ],
+    "receiveAddresses":[
+    {
+        "protocol": "http",
+        "address": "192.168.0.2",
+        "port": "80"
+    },
+    {
+        "protocol": "enocean",
+        "address": "",
+        "port": "/dev/ttyUSB0"
+    }
+    ],
+    "interpreters": ["params", "atmel", "enocean"],
+    "devices": [
+    {
+        "type": "sensor",
+        "name": "isItWeekend",
+        "id": 11,
+        "reference": "weekend",
+        "data": "bool",
+        "value": false
+    }
+    ]
+},
+{
+    "type": "processor",
+    "name": "estimatedOutsideTemperature",
+    "class": "de.atennert.homectrl.dataprocessing.LowPrioritizingDoubleProcessor",
+    "id": 5,
+    "value": 20,
+    "data": "double",
+    "resources": [1, 3],
+    "lowestValueWeight": 4
+},
+{
+    "type": "processor",
+    "name": "highestOutsideBrightness",
+    "class": "de.atennert.homectrl.dataprocessing.HighIntegerProcessor",
+    "id": 8,
+    "value": 600,
+    "data": "integer",
+    "resources": [6, 7]
+},
+{
+    "type": "processor",
+    "name": "isItCloudyOrDark",
+    "class": "de.atennert.homectrl.dataprocessing.IntegerIsUnderLimitProcessor",
+    "id": 9,
+    "value": false,
+    "data": "boolean",
+    "resources": [8],
+    "limit": 800
+},
+{
+    "type": "processor",
+    "name": "heatingActive",
+    "class": "de.atennert.homectrl.dataprocessing.LogicalAndProcessor",
+    "id": 10,
+    "value": false,
+    "data": "boolean",
+    "resources": [9, 11]
+},
+{
+    "type": "control",
+    "name": "workRoomHeatingController",
+    "class": "de.atennert.homectrl.controls.ActivatableHeatingController",
+    "actorId": 10001,
+    "value": false,
+    "outsideSensorId": 5,
+    "insideSensorId": 2,
+    "activationSensorId": 10,
+    "upperLimit": 20,
+    "lowerLimit": 18
+},
+{
+    "type": "control",
+    "name": "livingRoomHeatingController",
+    "class": "de.atennert.homectrl.controls.ActivatableHeatingController",
+    "actorId": 10002,
+    "value": false,
+    "outsideSensorId": 5,
+    "insideSensorId": 4,
+    "activationSensorId": 10,
+    "upperLimit": 20,
+    "lowerLimit": 18
+}
+]

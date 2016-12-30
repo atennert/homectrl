@@ -25,6 +25,7 @@
   <!-- alle app-context.xml's scannen-->
   <import resource="classpath*:spring/properties.xml" />
   <import resource="classpath*:spring/eventBus.xml" />
+  <import resource="classpath*:spring/database.xml" />
   <import resource="classpath*:spring/devices.xml" />
   <import resource="classpath*:spring/com.xml" />
   

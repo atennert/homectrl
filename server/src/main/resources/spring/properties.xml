@@ -26,14 +26,16 @@
   default-destroy-method="dispose">
   
   <context:annotation-config/>
-  
 
   <bean id="placeholderConfig" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="locations">
         <list>
-            <value>addresses.properties</value>
+            <!-- using the FileSystemResource works for detecting files in the same dir as the jar file -->
+            <bean class="org.springframework.core.io.FileSystemResource">
+                <constructor-arg value="server.properties" />
+            </bean>
         </list>
-    </property> 
+    </property>
   </bean>
 
-</beans>  
+</beans>

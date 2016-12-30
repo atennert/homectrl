@@ -31,14 +31,14 @@
   <context:annotation-config/>
 
 
-  <bean id="deviceDescriptionFactory" class="org.atennert.homectrl.util.DeviceDescriptionFactory">
+  <bean id="deviceDescriptionFactory" class="de.atennert.homectrl.util.DeviceDescriptionFactory">
     <constructor-arg name="configuration" value="configuration.json"/>
   </bean>
   
   
   <!-- Sensors -->
 
-  <bean id="isItWeekend" class="org.atennert.homectrl.sensors.WeekendSensor">
+  <bean id="isItWeekend" class="de.atennert.homectrl.sensors.WeekendSensor">
     <constructor-arg name="id" value="11"/>
     <constructor-arg name="value" value="false"/>
   </bean>
@@ -46,13 +46,13 @@
 
   <!-- Managers for controls and processors -->
 
-  <bean id="controlManager" class="org.atennert.homectrl.controls.util.ControlManager">
+  <bean id="controlManager" class="de.atennert.homectrl.controls.util.ControlManager">
     <property name="controls">
       <bean factory-bean="deviceDescriptionFactory" factory-method="getControls"/>
     </property>
   </bean>
 
-  <bean id="processorManager" class="org.atennert.homectrl.dataprocessing.util.ProcessorManager">
+  <bean id="processorManager" class="de.atennert.homectrl.dataprocessing.util.ProcessorManager">
     <property name="processors">
       <bean factory-bean="deviceDescriptionFactory" factory-method="getProcessors"/>
     </property>
