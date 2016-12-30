@@ -7,14 +7,14 @@ apply plugin: "spring-boot"
 archivesBaseName = "server"
 version = "0.0.1"
 
-mainClassName = "org.atennert.homectrl.Main"
+mainClassName = "de.atennert.homectrl.Main"
 
 jar {
     baseName = "HomeCtrl"
     version = ""
 
     manifest {
-        attributes 'Main-Class': 'org.atennert.homectrl.Main'
+        attributes 'Main-Class': 'de.atennert.homectrl.Main'
     }
 
     from {
