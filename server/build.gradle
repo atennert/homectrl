@@ -5,7 +5,6 @@
 apply plugin: "spring-boot"
 
 archivesBaseName = "server"
-version = "0.0.1"
 
 mainClassName = "de.atennert.homectrl.Main"
 
