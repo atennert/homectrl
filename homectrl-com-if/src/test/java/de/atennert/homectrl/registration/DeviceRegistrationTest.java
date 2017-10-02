@@ -18,22 +18,20 @@ public class DeviceRegistrationTest
 
     private static final String PROTOCOL_0 = "p0";
     private static final String PROTOCOL_1 = "p1";
-    private static final String PROTOCOL_UNKOWN = "pu";
-
-    private Map<String, Set<String>> interpreterProtocolRuleSet;
+    private static final String PROTOCOL_UNKNOWN = "pu";
 
     private DeviceRegistration deviceRegistration;
 
     @Before
     public void setup()
     {
-        interpreterProtocolRuleSet = new HashMap<String, Set<String>>();
-        Set<String> interpreters = new HashSet<String>();
+        Map<String, Set<String>> interpreterProtocolRuleSet = new HashMap<>();
+        Set<String> interpreters = new HashSet<>();
         interpreters.add( INTERPRETER_0 );
         interpreters.add( INTERPRETER_1 );
         interpreterProtocolRuleSet.put( PROTOCOL_0, interpreters );
 
-        interpreters = new HashSet<String>();
+        interpreters = new HashSet<>();
         interpreters.add( INTERPRETER_1 );
         interpreterProtocolRuleSet.put( PROTOCOL_1, interpreters );
 
@@ -44,7 +42,7 @@ public class DeviceRegistrationTest
     @Test
     public void testNoInterpreterForProtocol()
     {
-        assertTrue( deviceRegistration.getInterpretersForProtocol( PROTOCOL_UNKOWN ).isEmpty() );
+        assertTrue( deviceRegistration.getInterpretersForProtocol( PROTOCOL_UNKNOWN ).isEmpty() );
     }
 
     @Test

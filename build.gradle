@@ -1,13 +1,13 @@
 
 group = "org.atennert.homectrl"
-version = 3.1
+version = "3.2.0"
 
 buildscript {
     repositories {
         jcenter()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.1.6.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1+")
     }
 }
 

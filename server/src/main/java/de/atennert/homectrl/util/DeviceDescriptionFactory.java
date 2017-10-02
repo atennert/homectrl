@@ -1,19 +1,3 @@
-/*******************************************************************************
- * Copyright 2015 Andreas Tennert
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- *******************************************************************************/
-
 package de.atennert.homectrl.util;
 
 import de.atennert.homectrl.registration.NodeDescription;
@@ -57,15 +41,15 @@ public class DeviceDescriptionFactory
         loadConfiguration(configuration);
     }
 
-    private final void loadConfiguration(String configuration)
+    private void loadConfiguration(String configuration)
     {
         log.debug("Loading device configuration from " + configuration);
 
-        dataDescriptions = new HashMap<Integer, DataDescription>();
-        nodeDescriptions = new HashSet<NodeDescription>();
-        processors = new HashSet<AbstractDataProcessor<?>>();
-        controls = new HashSet<AbstractController<?>>();
-        defaultValues = new HashMap<Integer, Object>();
+        dataDescriptions = new HashMap<>();
+        nodeDescriptions = new HashSet<>();
+        processors = new HashSet<>();
+        controls = new HashSet<>();
+        defaultValues = new HashMap<>();
 
         Resource resource = new FileSystemResource(configuration);
 
@@ -122,7 +106,7 @@ public class DeviceDescriptionFactory
     /**
      * Loads sensors and actors into the data description map.
      * TODO load sensor/actor information and use it to restrict the use
-     * @param JSON representation of a node
+     * @param node representation of a node
      */
     private void loadDataDescriptions(JSONObject node)
     {
@@ -147,7 +131,7 @@ public class DeviceDescriptionFactory
 
     private static Object getObjectValue(JSONObject obj)
     {
-        Object value = null;
+        Object value;
         switch (DataType.getDataTypeFromString(obj.getString("data"))){
             case INTEGER:
                 value = new Integer(obj.getInt("value"));
@@ -200,7 +184,7 @@ public class DeviceDescriptionFactory
 
     private static Map<String, String> mapAddressData(JSONObject addressObj)
     {
-        Map<String, String> data = new HashMap<String, String>();
+        Map<String, String> data = new HashMap<>();
         String[] keys = JSONObject.getNames(addressObj);
 
         for (String key : keys)
@@ -217,7 +201,7 @@ public class DeviceDescriptionFactory
 
         // construct the processor
         Annotation[][] parameterFields = constructor.getParameterAnnotations();
-        ArrayList<Object> arguments = new ArrayList<Object>(parameterFields.length);
+        ArrayList<Object> arguments = new ArrayList<>(parameterFields.length);
 
         for (int i=0; i<parameterFields.length; i++)
         {
@@ -272,7 +256,7 @@ public class DeviceDescriptionFactory
     @SuppressWarnings("unchecked")
     private <T> Map<Integer, T> getResourceValues(int[] ids)
     {
-        Map<Integer, T> values = new HashMap<Integer, T>();
+        Map<Integer, T> values = new HashMap<>();
 
         for (int id : ids)
         {
@@ -288,7 +272,7 @@ public class DeviceDescriptionFactory
 
         // construct the control
         Annotation[][] parameterFields = constructor.getParameterAnnotations();
-        ArrayList<Object> arguments = new ArrayList<Object>(parameterFields.length);
+        ArrayList<Object> arguments = new ArrayList<>(parameterFields.length);
 
         for (Annotation[] parameterField : parameterFields)
         {
@@ -316,7 +300,7 @@ public class DeviceDescriptionFactory
 
     public Set<DataDescription> getDataDescriptions()
     {
-        return new HashSet<DataDescription>(dataDescriptions.values());
+        return new HashSet<>(dataDescriptions.values());
     }
 
     public Set<NodeDescription> getNodeDescriptions()

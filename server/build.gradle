@@ -2,12 +2,14 @@
  * HomeCtrl server app bundle
  */
 
-apply plugin: "spring-boot"
+apply plugin: "org.springframework.boot"
 
 archivesBaseName = "server"
-version = "0.0.1"
 
-mainClassName = "de.atennert.homectrl.Main"
+bootRepackage {
+    mainClass = "de.atennert.homectrl.Main"
+    executable = true
+}
 
 jar {
     baseName = "HomeCtrl"

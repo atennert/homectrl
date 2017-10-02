@@ -1,12 +1,3 @@
-/*
- * EventBusPostProcessor.java
- * Author: Patrick Meade
- * http://pmeade.blogspot.de/2012/06/using-guava-eventbus-with-spring.html
- *
- * EventBusPostProcessor.java is hereby placed into the public domain.
- * Use it as you see fit, and entirely at your own risk.
- */
-
 package de.atennert.homectrl.util;
 
 import java.lang.annotation.Annotation;

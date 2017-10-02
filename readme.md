@@ -1,6 +1,15 @@
 
 # HomeCtrl
 
+## Status
+__master__:<br>
+[![Build Status](https://travis-ci.org/atennert/de.atennert.homectrl.svg?branch=master)](https://travis-ci.org/atennert/de.atennert.homectrl)
+[![Release](https://img.shields.io/github/release/atennert/de.atennert.homectrl.svg)](https://github.com/atennert/de.atennert.homectrl/releases)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
+__devel__:<br>
+[![Build Status](https://travis-ci.org/atennert/de.atennert.homectrl.svg?branch=devel)](https://travis-ci.org/atennert/de.atennert.homectrl)
+
 ## Contents:
 
 * [Introduction](#intro)
@@ -102,3 +111,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
+## Release notes
+
+TODO
