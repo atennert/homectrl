@@ -8,6 +8,10 @@ archivesBaseName = "server"
 
 mainClassName = "de.atennert.homectrl.Main"
 
+bootRepackage {
+    mainClass = project.mainClassName
+}
+
 jar {
     baseName = "HomeCtrl"
     version = ""
