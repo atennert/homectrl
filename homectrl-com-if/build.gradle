@@ -3,7 +3,6 @@
  */
 
 archivesBaseName = "homectrlComIf"
-version = "0.0.2"
 
 dependencies {
     compile project(':homectrl')

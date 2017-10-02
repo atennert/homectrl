@@ -3,7 +3,6 @@
  */
 
 archivesBaseName = "dataProcessing"
-version = "0.0.1"
 
 dependencies {
     compile project(':homectrl')
